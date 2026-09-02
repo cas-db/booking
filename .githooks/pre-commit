@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Quality gates. Every one of them must pass or the commit is blocked.
+# Same commands as `npm run check`; run that yourself before committing to save a round trip.
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+gate() {
+  echo "pre-commit: $1"
+  shift
+  "$@"
+}
+
+gate "lint (oxlint)"          npm run --silent lint
+gate "format (prettier)"      npm run --silent format:check
+gate "typecheck (tsc)"        npm run --silent typecheck
+gate "tests (cds.test)"       npm test --silent
+echo "pre-commit: all gates green"
