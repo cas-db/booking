@@ -1,6 +1,6 @@
 import cds from '@sap/cds'
 
-const { UPDATE } = cds.ql
+const { SELECT, UPDATE } = cds.ql
 
 type TireDelivered = {
   bookingId?: string
@@ -32,6 +32,17 @@ export default class BookingService extends cds.ApplicationService {
 
       const updated = await UPDATE.entity(Bookings, bookingId).with({ status: 'ReadyForSwap' })
       if (!updated) console.warn(`TireDelivered for unknown booking ${bookingId}, ignoring`)
+    })
+
+    this.on('confirmSwap', Bookings, async (req) => {
+      const booking = await SELECT.one.from(req.subject)
+      if (!booking) return req.reject(404, 'booking not found')
+      if (booking.status !== 'ReadyForSwap') {
+        return req.reject(409, `a booking in status ${booking.status} cannot be swapped`)
+      }
+
+      await UPDATE.entity(Bookings, booking.ID).with({ status: 'Done' })
+      return SELECT.one.from(req.subject)
     })
 
     return super.init()
