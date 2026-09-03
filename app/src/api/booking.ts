@@ -46,7 +46,9 @@ async function errorMessage(response: Response): Promise<string> {
 }
 
 export async function listBookings(): Promise<Booking[]> {
-  const body = await request<ODataList<Booking>>('/Bookings?$expand=customer')
+  const body = await request<ODataList<Booking>>(
+    '/Bookings?$expand=customer&$orderby=createdAt desc',
+  )
   return body.value
 }
 

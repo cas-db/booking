@@ -276,3 +276,39 @@ describe('cancel action', () => {
     assert.ok(data.value.some((b: { ID: string }) => b.ID === id))
   })
 })
+
+describe('managed timestamps', () => {
+  it('stamps createdAt and modifiedAt on a new booking', async () => {
+    const before = Date.now()
+    const { data } = await POST('/booking/Bookings', {
+      tireSpec: '205/55 R16 winter',
+      garageId: 'GAR-09',
+    })
+
+    const one = await GET(`/booking/Bookings(${data.ID})`)
+    assert.ok(one.data.createdAt, 'createdAt is set')
+    assert.ok(one.data.modifiedAt, 'modifiedAt is set')
+    const createdAt = new Date(one.data.createdAt).getTime()
+    assert.ok(createdAt >= before - 1000 && createdAt <= Date.now() + 1000)
+  })
+
+  it('bumps modifiedAt when confirmSwap changes the status', async () => {
+    const messaging = await cds.connect.to('messaging')
+    const { data } = await POST('/booking/Bookings', {
+      tireSpec: '205/55 R16 winter',
+      garageId: 'GAR-10',
+    })
+    await messaging.emit('TireDelivered', { bookingId: data.ID, garageId: 'GAR-10' })
+
+    const before = await GET(`/booking/Bookings(${data.ID})`)
+    await new Promise((resolve) => setTimeout(resolve, 20))
+    await POST(`/booking/Bookings(${data.ID})/BookingService.confirmSwap`, {})
+
+    const after = await GET(`/booking/Bookings(${data.ID})`)
+    assert.equal(after.data.createdAt, before.data.createdAt)
+    assert.ok(
+      new Date(after.data.modifiedAt).getTime() > new Date(before.data.createdAt).getTime(),
+      'modifiedAt moved forward',
+    )
+  })
+})

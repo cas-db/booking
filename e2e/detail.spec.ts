@@ -22,6 +22,7 @@ test('a deep link renders the booking with its chain timeline', async ({ page, r
   const steps = page.getByTestId('timeline-step')
   await expect(steps).toHaveCount(3)
   await expect(steps.nth(0)).toHaveAttribute('data-state', 'done')
+  await expect(steps.nth(0).getByTestId('timeline-time')).toHaveText(/UTC$/)
   await expect(steps.nth(2)).toHaveAttribute('data-state', 'ahead')
 })
 
@@ -39,7 +40,9 @@ test('confirming from the detail page turns the booking Done', async ({ page, re
   await expect(detail.getByTestId('status-badge')).toHaveText('Done')
   await expect(page.getByTestId('toast')).toContainText('Confirm swap')
   await expect(detail.getByTestId('action-confirmSwap')).toBeHidden()
-  await expect(page.getByTestId('timeline-step').nth(2)).toHaveAttribute('data-state', 'done')
+  const swapped = page.getByTestId('timeline-step').nth(2)
+  await expect(swapped).toHaveAttribute('data-state', 'done')
+  await expect(swapped.getByTestId('timeline-time')).toHaveText(/UTC$/)
   expect((await readBooking(request, booking.ID))?.status).toBe('Done')
 })
 

@@ -4,6 +4,7 @@
   import BookingActions from './BookingActions.svelte'
   import type { BookingAction } from '../lib/status'
   import { bookingHref } from '../lib/router.svelte'
+  import { absoluteTime, relativeTime } from '../lib/time'
 
   let {
     booking,
@@ -43,6 +44,12 @@
       <dd class="font-medium">{booking.garageId}</dd>
     </div>
     <div>
+      <dt class="text-slate-600 dark:text-slate-400">Booked</dt>
+      <dd data-testid="card-created" title={absoluteTime(booking.createdAt)} class="font-medium">
+        {relativeTime(booking.createdAt)}
+      </dd>
+    </div>
+    <div class="col-span-2">
       <dt class="text-slate-600 dark:text-slate-400">Booking</dt>
       <dd class="font-mono text-xs">{booking.ID.slice(0, 8)}</dd>
     </div>

@@ -16,6 +16,7 @@ test('renders one card per booking with its status', async ({ page, request }) =
   await expect(card).toContainText(customer.name)
   await expect(card).toContainText('GAR-01')
   await expect(card.getByTestId('status-badge')).toHaveText('Created')
+  await expect(card.getByTestId('card-created')).toHaveText(/just now|min ago/)
   await expect(page.getByTestId('connection')).toHaveAttribute('data-connected', 'true')
 })
 
