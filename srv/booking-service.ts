@@ -1,5 +1,12 @@
 import cds from '@sap/cds'
 
+const { UPDATE } = cds.ql
+
+type TireDelivered = {
+  bookingId?: string
+  garageId?: string
+}
+
 export default class BookingService extends cds.ApplicationService {
   async init() {
     const { Bookings } = this.entities
@@ -14,6 +21,17 @@ export default class BookingService extends cds.ApplicationService {
     this.after('CREATE', Bookings, async (_keys, req) => {
       const { ID, tireSpec, garageId } = req.data
       await messaging.emit('BookingCreated', { bookingId: ID, tireSpec, garageId })
+    })
+
+    messaging.on('TireDelivered', async (msg) => {
+      const { bookingId } = msg.data as TireDelivered
+      if (!bookingId) {
+        console.warn('TireDelivered without a bookingId, ignoring')
+        return
+      }
+
+      const updated = await UPDATE.entity(Bookings, bookingId).with({ status: 'ReadyForSwap' })
+      if (!updated) console.warn(`TireDelivered for unknown booking ${bookingId}, ignoring`)
     })
 
     return super.init()

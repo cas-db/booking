@@ -60,3 +60,37 @@ describe('BookingCreated event', () => {
     })
   })
 })
+
+describe('TireDelivered event', () => {
+  const createBooking = async (tireSpec: string, garageId: string) => {
+    const { data } = await POST('/booking/Bookings', { tireSpec, garageId })
+    return data.ID as string
+  }
+
+  it('sets the addressed booking to ReadyForSwap and leaves the others alone', async () => {
+    const messaging = await cds.connect.to('messaging')
+    const delivered = await createBooking('195/65 R15 winter', 'GAR-03')
+    const untouched = await createBooking('195/65 R15 winter', 'GAR-03')
+
+    await messaging.emit('TireDelivered', { bookingId: delivered, garageId: 'GAR-03' })
+
+    const one = await GET(`/booking/Bookings(${delivered})`)
+    assert.equal(one.data.status, 'ReadyForSwap')
+
+    const other = await GET(`/booking/Bookings(${untouched})`)
+    assert.equal(other.data.status, 'Created')
+  })
+
+  it('ignores an unknown bookingId and keeps serving', async () => {
+    const messaging = await cds.connect.to('messaging')
+
+    await messaging.emit('TireDelivered', {
+      bookingId: '99999999-9999-9999-9999-999999999999',
+      garageId: 'GAR-03',
+    })
+
+    const { status, data } = await GET('/booking/Bookings')
+    assert.equal(status, 200)
+    assert.ok(Array.isArray(data.value))
+  })
+})
