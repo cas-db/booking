@@ -1,4 +1,4 @@
-export const BOOKING_STATUS = ['Created', 'ReadyForSwap', 'Done'] as const
+export const BOOKING_STATUS = ['Created', 'ReadyForSwap', 'Done', 'Cancelled'] as const
 
 export type BookingStatus = (typeof BOOKING_STATUS)[number]
 
@@ -7,6 +7,7 @@ const ALLOWED_FROM: Record<BookingStatus, readonly BookingStatus[]> = {
   Created: [],
   ReadyForSwap: ['Created'],
   Done: ['ReadyForSwap'],
+  Cancelled: ['Created'],
 }
 
 export function canTransition(from: string | null | undefined, to: BookingStatus): boolean {

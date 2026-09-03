@@ -5,6 +5,7 @@ import { BOOKING_STATUS, canTransition, type BookingStatus } from '../srv/bookin
 const allowed: [BookingStatus, BookingStatus][] = [
   ['Created', 'ReadyForSwap'],
   ['ReadyForSwap', 'Done'],
+  ['Created', 'Cancelled'],
 ]
 
 const isAllowed = (from: BookingStatus, to: BookingStatus) =>

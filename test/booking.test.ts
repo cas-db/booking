@@ -212,3 +212,67 @@ describe('confirmSwap action', () => {
     await assert.rejects(confirmSwap('99999999-9999-9999-9999-999999999999'), /404/)
   })
 })
+
+describe('cancel action', () => {
+  const cancel = (id: string) => POST(`/booking/Bookings(${id})/BookingService.cancel`, {})
+
+  const createBooking = async () => {
+    const { data } = await POST('/booking/Bookings', {
+      tireSpec: '205/55 R16 winter',
+      garageId: 'GAR-05',
+    })
+    return data.ID as string
+  }
+
+  it('cancels a booking in Created and emits BookingCancelled', async () => {
+    const messaging = await cds.connect.to('messaging')
+    const received: Record<string, unknown>[] = []
+    messaging.on('BookingCancelled', (msg) => {
+      received.push(msg.data as Record<string, unknown>)
+    })
+
+    const id = await createBooking()
+    const { data } = await cancel(id)
+
+    assert.equal(data.status, 'Cancelled')
+    assert.deepEqual(received, [
+      { bookingId: id, garageId: 'GAR-05', tireSpec: '205/55 R16 winter' },
+    ])
+  })
+
+  it('answers 409 for a booking that is no longer in Created', async () => {
+    const messaging = await cds.connect.to('messaging')
+    const id = await createBooking()
+    await messaging.emit('TireDelivered', { bookingId: id, garageId: 'GAR-05' })
+
+    await assert.rejects(cancel(id), /409/)
+
+    const one = await GET(`/booking/Bookings(${id})`)
+    assert.equal(one.data.status, 'ReadyForSwap')
+  })
+
+  it('answers 404 for an unknown ID', async () => {
+    await assert.rejects(cancel('99999999-9999-9999-9999-999999999999'), /404/)
+  })
+
+  it('ignores a TireDelivered for a cancelled booking', async () => {
+    const messaging = await cds.connect.to('messaging')
+    const id = await createBooking()
+    await cancel(id)
+
+    await messaging.emit('TireDelivered', { bookingId: id, garageId: 'GAR-05' })
+
+    const one = await GET(`/booking/Bookings(${id})`)
+    assert.equal(one.data.status, 'Cancelled')
+  })
+
+  it('lists only the bookings in a given status with $filter', async () => {
+    const id = await createBooking()
+    await cancel(id)
+
+    const { data } = await GET("/booking/Bookings?$filter=status eq 'Cancelled'")
+    assert.ok(data.value.length > 0)
+    assert.ok(data.value.every((b: { status: string }) => b.status === 'Cancelled'))
+    assert.ok(data.value.some((b: { ID: string }) => b.ID === id))
+  })
+})

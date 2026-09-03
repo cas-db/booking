@@ -75,6 +75,22 @@ export default class BookingService extends cds.ApplicationService {
       return SELECT.one.from(req.subject)
     })
 
+    this.on('cancel', Bookings, async (req) => {
+      const booking = await SELECT.one.from(req.subject)
+      if (!booking) return req.reject(404, 'booking not found')
+      if (!canTransition(booking.status, 'Cancelled')) {
+        return req.reject(409, `a booking in status ${booking.status} cannot be cancelled`)
+      }
+
+      await UPDATE.entity(Bookings, booking.ID).with({ status: 'Cancelled' })
+      await messaging.emit('BookingCancelled', {
+        bookingId: booking.ID,
+        garageId: booking.garageId,
+        tireSpec: booking.tireSpec,
+      })
+      return SELECT.one.from(req.subject)
+    })
+
     return super.init()
   }
 }
