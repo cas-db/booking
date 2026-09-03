@@ -38,3 +38,25 @@ describe('BookingService', () => {
     await assert.rejects(POST('/booking/Bookings', { tireSpec: '  ', garageId: 'GAR-01' }), /400/)
   })
 })
+
+describe('BookingCreated event', () => {
+  it('emits exactly one BookingCreated with the contract payload', async () => {
+    const messaging = await cds.connect.to('messaging')
+    const received: Record<string, unknown>[] = []
+    messaging.on('BookingCreated', (msg) => {
+      received.push(msg.data as Record<string, unknown>)
+    })
+
+    const { data } = await POST('/booking/Bookings', {
+      tireSpec: '225/45 R17 summer',
+      garageId: 'GAR-02',
+    })
+
+    assert.equal(received.length, 1)
+    assert.deepEqual(received[0], {
+      bookingId: data.ID,
+      tireSpec: '225/45 R17 summer',
+      garageId: 'GAR-02',
+    })
+  })
+})
