@@ -1,4 +1,5 @@
 import cds from '@sap/cds'
+import { canTransition } from './booking-status'
 
 const { SELECT, UPDATE } = cds.ql
 
@@ -35,7 +36,7 @@ export default class BookingService extends cds.ApplicationService {
         console.warn(`TireDelivered for unknown booking ${bookingId}, ignoring`)
         return
       }
-      if (booking.status !== 'Created') {
+      if (!canTransition(booking.status, 'ReadyForSwap')) {
         console.warn(`TireDelivered for booking ${bookingId} in status ${booking.status}, ignoring`)
         return
       }
@@ -46,7 +47,7 @@ export default class BookingService extends cds.ApplicationService {
     this.on('confirmSwap', Bookings, async (req) => {
       const booking = await SELECT.one.from(req.subject)
       if (!booking) return req.reject(404, 'booking not found')
-      if (booking.status !== 'ReadyForSwap') {
+      if (!canTransition(booking.status, 'Done')) {
         return req.reject(409, `a booking in status ${booking.status} cannot be swapped`)
       }
 
