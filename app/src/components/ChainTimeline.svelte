@@ -1,10 +1,27 @@
 <script lang="ts">
   import type { BookingStatus } from '../api/types'
   import { timelineSteps } from '../lib/status'
+  import { absoluteTime } from '../lib/time'
 
-  let { status }: { status: BookingStatus } = $props()
+  let {
+    status,
+    createdAt,
+    modifiedAt,
+  }: {
+    status: BookingStatus
+    createdAt?: string | null
+    modifiedAt?: string | null
+  } = $props()
 
   const steps = $derived(timelineSteps(status))
+  const lastDone = $derived(steps.filter((step) => step.state === 'done').length - 1)
+
+  /** Only the booking and the latest status change have a timestamp in the model. */
+  function stampOf(index: number): string | null {
+    if (index === 0) return createdAt ?? null
+    if (index === lastDone && status !== 'Created') return modifiedAt ?? null
+    return null
+  }
 
   const DOT: Record<string, string> = {
     done: 'bg-emerald-700 text-white',
@@ -37,6 +54,14 @@
         <span class="sr-only">({step.state})</span>
       </p>
       <p class="text-xs text-slate-600 dark:text-slate-400">{step.hint}</p>
+      {#if stampOf(steps.indexOf(step))}
+        <p
+          data-testid="timeline-time"
+          class="mt-0.5 font-mono text-xs text-slate-600 dark:text-slate-400"
+        >
+          {absoluteTime(stampOf(steps.indexOf(step)))}
+        </p>
+      {/if}
     </li>
   {/each}
 
@@ -51,6 +76,12 @@
       <p class="text-sm font-semibold">Cancelled</p>
       <p class="text-xs text-slate-600 dark:text-slate-400">
         the side branch, BookingCancelled left the service
+      </p>
+      <p
+        data-testid="timeline-time"
+        class="mt-0.5 font-mono text-xs text-slate-600 dark:text-slate-400"
+      >
+        {absoluteTime(modifiedAt)}
       </p>
     </li>
   {/if}

@@ -13,6 +13,8 @@ export type Booking = {
   status: BookingStatus
   customer_ID?: string | null
   customer?: Customer | null
+  createdAt?: string | null
+  modifiedAt?: string | null
 }
 
 export type NewBooking = {

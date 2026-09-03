@@ -103,7 +103,11 @@
     </dl>
 
     <h3 class="mb-4 text-sm font-semibold tracking-wide text-slate-500 uppercase">Chain</h3>
-    <ChainTimeline status={booking.status} />
+    <ChainTimeline
+      status={booking.status}
+      createdAt={booking.createdAt}
+      modifiedAt={booking.modifiedAt}
+    />
 
     <div class="mt-8 flex flex-col gap-3">
       <BookingActions {booking} onaction={runAction} />
