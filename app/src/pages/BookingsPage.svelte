@@ -5,15 +5,14 @@
   import BookingForm from '../components/BookingForm.svelte'
   import { createBookingsStore } from '../lib/bookings.svelte'
   import { ACTION_LABELS, countByStatus, filterBookings, type BookingAction } from '../lib/status'
-  import type { Booking, BookingStatus } from '../api/types'
+  import type { Booking } from '../api/types'
+  import { filters } from '../lib/filters.svelte'
   import type { Toasts } from '../lib/toasts.svelte'
 
   let { toasts }: { toasts: Toasts } = $props()
 
   const store = createBookingsStore()
 
-  let selected = $state<BookingStatus[]>([])
-  let needle = $state('')
   let dialog = $state<HTMLDialogElement | null>(null)
   let open = $state(false)
 
@@ -48,7 +47,7 @@
   })
 
   const counts = $derived(countByStatus(store.bookings))
-  const visible = $derived(filterBookings(store.bookings, selected, needle))
+  const visible = $derived(filterBookings(store.bookings, filters.selected, filters.needle))
 
   $effect(() => store.start())
 </script>
@@ -75,12 +74,12 @@
   </div>
 
   <div class="mb-6 flex flex-wrap items-center gap-3">
-    <StatusFilter bind:selected {counts} />
+    <StatusFilter bind:selected={filters.selected} {counts} />
     <label class="ml-auto">
       <span class="sr-only">Filter by tire spec, garage or customer</span>
       <input
         type="search"
-        bind:value={needle}
+        bind:value={filters.needle}
         placeholder="Filter by tire spec or garage"
         class="w-64 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:outline-none dark:border-slate-700 dark:bg-slate-900"
       />

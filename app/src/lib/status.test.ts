@@ -7,6 +7,7 @@ import {
   filterBookings,
   matchesText,
   statusLabel,
+  timelineSteps,
 } from './status'
 import type { Booking } from '../api/types'
 
@@ -82,5 +83,35 @@ describe('allowed actions per status', () => {
   it('names the status an action leaves the booking in', () => {
     assert.equal(ACTION_RESULT.confirmSwap, 'Done')
     assert.equal(ACTION_RESULT.cancel, 'Cancelled')
+  })
+})
+
+describe('chain timeline', () => {
+  it('marks the booking step as reached and the rest as ahead in Created', () => {
+    assert.deepEqual(
+      timelineSteps('Created').map((step) => step.state),
+      ['done', 'current', 'ahead'],
+    )
+  })
+
+  it('moves the current step forward once the tire is delivered', () => {
+    assert.deepEqual(
+      timelineSteps('ReadyForSwap').map((step) => step.state),
+      ['done', 'done', 'current'],
+    )
+  })
+
+  it('has every step behind it when the booking is Done', () => {
+    assert.deepEqual(
+      timelineSteps('Done').map((step) => step.state),
+      ['done', 'done', 'done'],
+    )
+  })
+
+  it('skips the steps a cancelled booking never reaches', () => {
+    assert.deepEqual(
+      timelineSteps('Cancelled').map((step) => step.state),
+      ['done', 'skipped', 'skipped'],
+    )
   })
 })
