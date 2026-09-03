@@ -155,6 +155,40 @@ describe('confirmSwap action', () => {
     assert.equal(one.data.status, 'Done')
   })
 
+  it('emits exactly one BookingDone with the contract payload', async () => {
+    const messaging = await cds.connect.to('messaging')
+    const received: Record<string, unknown>[] = []
+    messaging.on('BookingDone', (msg) => {
+      received.push(msg.data as Record<string, unknown>)
+    })
+
+    const id = await readyBooking()
+    await confirmSwap(id)
+
+    assert.equal(received.length, 1)
+    assert.deepEqual(received[0], {
+      bookingId: id,
+      garageId: 'GAR-04',
+      tireSpec: '205/55 R16 winter',
+    })
+  })
+
+  it('emits no BookingDone when the action is rejected', async () => {
+    const messaging = await cds.connect.to('messaging')
+    let count = 0
+    messaging.on('BookingDone', () => {
+      count += 1
+    })
+
+    const { data } = await POST('/booking/Bookings', {
+      tireSpec: '205/55 R16 winter',
+      garageId: 'GAR-04',
+    })
+    await assert.rejects(confirmSwap(data.ID), /409/)
+
+    assert.equal(count, 0)
+  })
+
   it('answers 409 for a booking in Created and leaves the status alone', async () => {
     const { data } = await POST('/booking/Bookings', {
       tireSpec: '205/55 R16 winter',

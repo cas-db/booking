@@ -67,6 +67,11 @@ export default class BookingService extends cds.ApplicationService {
       }
 
       await UPDATE.entity(Bookings, booking.ID).with({ status: 'Done' })
+      await messaging.emit('BookingDone', {
+        bookingId: booking.ID,
+        garageId: booking.garageId,
+        tireSpec: booking.tireSpec,
+      })
       return SELECT.one.from(req.subject)
     })
 
