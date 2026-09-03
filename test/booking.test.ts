@@ -94,3 +94,52 @@ describe('TireDelivered event', () => {
     assert.ok(Array.isArray(data.value))
   })
 })
+
+describe('confirmSwap action', () => {
+  const confirmSwap = (id: string) =>
+    POST(`/booking/Bookings(${id})/BookingService.confirmSwap`, {})
+
+  const readyBooking = async () => {
+    const messaging = await cds.connect.to('messaging')
+    const { data } = await POST('/booking/Bookings', {
+      tireSpec: '205/55 R16 winter',
+      garageId: 'GAR-04',
+    })
+    await messaging.emit('TireDelivered', { bookingId: data.ID, garageId: 'GAR-04' })
+    return data.ID as string
+  }
+
+  it('sets a ReadyForSwap booking to Done and returns it', async () => {
+    const id = await readyBooking()
+
+    const { data } = await confirmSwap(id)
+    assert.equal(data.ID, id)
+    assert.equal(data.status, 'Done')
+
+    const one = await GET(`/booking/Bookings(${id})`)
+    assert.equal(one.data.status, 'Done')
+  })
+
+  it('answers 409 for a booking in Created and leaves the status alone', async () => {
+    const { data } = await POST('/booking/Bookings', {
+      tireSpec: '205/55 R16 winter',
+      garageId: 'GAR-04',
+    })
+
+    await assert.rejects(confirmSwap(data.ID), /409/)
+
+    const one = await GET(`/booking/Bookings(${data.ID})`)
+    assert.equal(one.data.status, 'Created')
+  })
+
+  it('answers 409 for a booking that is already Done', async () => {
+    const id = await readyBooking()
+    await confirmSwap(id)
+
+    await assert.rejects(confirmSwap(id), /409/)
+  })
+
+  it('answers 404 for an unknown ID', async () => {
+    await assert.rejects(confirmSwap('99999999-9999-9999-9999-999999999999'), /404/)
+  })
+})
