@@ -19,7 +19,9 @@
     "prepare": "git config core.hooksPath .githooks || true",
     "ui": "vite app",
     "ui:build": "vite build app",
-    "ui:preview": "vite preview app"
+    "ui:preview": "vite preview app",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@cap-js/sqlite": "^3",
@@ -28,6 +30,7 @@
   "devDependencies": {
     "@cap-js/cds-test": "^1",
     "@cap-js/cds-types": "^0.19.0",
+    "@playwright/test": "^1.62.1",
     "@sap/cds-dk": "^10",
     "@sveltejs/vite-plugin-svelte": "^7.3.0",
     "@tailwindcss/vite": "^4.3.3",
