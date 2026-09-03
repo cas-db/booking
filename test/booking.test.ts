@@ -81,6 +81,19 @@ describe('TireDelivered event', () => {
     assert.equal(other.data.status, 'Created')
   })
 
+  it('ignores a replayed TireDelivered for a booking that is already Done', async () => {
+    const messaging = await cds.connect.to('messaging')
+    const id = await createBooking('205/55 R16 winter', 'GAR-03')
+
+    await messaging.emit('TireDelivered', { bookingId: id, garageId: 'GAR-03' })
+    await POST(`/booking/Bookings(${id})/BookingService.confirmSwap`, {})
+
+    await messaging.emit('TireDelivered', { bookingId: id, garageId: 'GAR-03' })
+
+    const one = await GET(`/booking/Bookings(${id})`)
+    assert.equal(one.data.status, 'Done')
+  })
+
   it('ignores an unknown bookingId and keeps serving', async () => {
     const messaging = await cds.connect.to('messaging')
 
