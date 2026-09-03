@@ -13,10 +13,13 @@
     "lint": "oxlint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && svelte-check --tsconfig app/tsconfig.json",
     "test": "node --env-file=test/.env --import tsx --test \"test/**/*.test.ts\"",
     "check": "npm run lint && npm run format:check && npm run typecheck && npm test",
-    "prepare": "git config core.hooksPath .githooks || true"
+    "prepare": "git config core.hooksPath .githooks || true",
+    "ui": "vite app",
+    "ui:build": "vite build app",
+    "ui:preview": "vite preview app"
   },
   "dependencies": {
     "@cap-js/sqlite": "^3",
@@ -26,11 +29,18 @@
     "@cap-js/cds-test": "^1",
     "@cap-js/cds-types": "^0.19.0",
     "@sap/cds-dk": "^10",
+    "@sveltejs/vite-plugin-svelte": "^7.3.0",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^22",
     "oxlint": "^1",
     "prettier": "^3",
+    "prettier-plugin-svelte": "^4.1.1",
+    "svelte": "^5.57.0",
+    "svelte-check": "^4.7.6",
+    "tailwindcss": "^4.3.3",
     "tsx": "^4",
-    "typescript": "^5.9"
+    "typescript": "^5.9",
+    "vite": "^8.2.2"
   },
   "cds": {
     "requires": {

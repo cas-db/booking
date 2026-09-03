@@ -12,14 +12,14 @@ booking. Fully covered by Playwright tests that run against the real CAP server.
 
 ## Stack proposal (needs approval, this adds dependencies)
 
-| Concern    | Choice                                        | Why                                                                        |
-| ---------- | --------------------------------------------- | -------------------------------------------------------------------------- |
+| Concern    | Choice                                        | Why                                                                                              |
+| ---------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | Framework  | Svelte 5 (runes) + TypeScript                 | Compiles away, tiny runtime, `$state` / `$derived` keep the polling and optimistic updates short |
-| Build      | Vite 7                                        | Instant dev server, proxy to `localhost:4004`, static build into `app/`    |
-| Styling    | Tailwind CSS 4 + a few hand rolled components | "Fancy" without pulling a whole component library                          |
-| Data       | plain `fetch` in a small `src/api/` module    | The service is four endpoints, a data layer library would be overkill      |
-| E2E tests  | Playwright + `@playwright/test`               | Explicitly requested, drives the real server plus the real UI              |
-| Unit tests | the existing `node:test` runner               | No second test runner in the repo                                          |
+| Build      | Vite 7                                        | Instant dev server, proxy to `localhost:4004`, static build into `app/`                          |
+| Styling    | Tailwind CSS 4 + a few hand rolled components | "Fancy" without pulling a whole component library                                                |
+| Data       | plain `fetch` in a small `src/api/` module    | The service is four endpoints, a data layer library would be overkill                            |
+| E2E tests  | Playwright + `@playwright/test`               | Explicitly requested, drives the real server plus the real UI                                    |
+| Unit tests | the existing `node:test` runner               | No second test runner in the repo                                                                |
 
 Plain Svelte + Vite as a client rendered SPA, not SvelteKit. SvelteKit would bring its own server
 and adapter story, and this app has one data source that already runs on 4004, so a second server
@@ -93,8 +93,8 @@ e2e/                        Playwright specs
 
 The UI is read/write over the existing endpoints only:
 
-| Use                | Call                                                          |
-| ------------------ | ------------------------------------------------------------- |
+| Use                | Call                                                           |
+| ------------------ | -------------------------------------------------------------- |
 | overview list      | `GET /booking/Bookings?$expand=customer&$orderby=ID`           |
 | customers dropdown | `GET /booking/Customers`                                       |
 | create             | `POST /booking/Bookings`                                       |
@@ -131,14 +131,14 @@ can. Two options, the plan picks the first:
 
 Specs to write:
 
-| Spec                    | Covers                                                                                     |
-| ----------------------- | ------------------------------------------------------------------------------------------ |
-| `overview.spec.ts`      | list renders, seeded customers appear in the dropdown, status filter chips narrow the grid |
-| `create-booking.spec.ts`| happy path creates a card in `Created`; invalid tireSpec and garageId show inline errors; the server `400` is surfaced |
-| `confirm-swap.spec.ts`  | emit `TireDelivered`, the card flips to `ReadyForSwap` through polling, confirm turns it `Done`, the confirm button then disappears |
-| `cancel.spec.ts`        | cancel from `Created` works; a cancelled booking offers no further actions                 |
-| `errors.spec.ts`        | a `409` (confirm on a `Created` booking, forced through the API) renders the error banner; backend down renders the error state |
-| `a11y.spec.ts`          | keyboard path create -> confirm without a mouse, axe scan on both pages clean              |
+| Spec                     | Covers                                                                                                                              |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `overview.spec.ts`       | list renders, seeded customers appear in the dropdown, status filter chips narrow the grid                                          |
+| `create-booking.spec.ts` | happy path creates a card in `Created`; invalid tireSpec and garageId show inline errors; the server `400` is surfaced              |
+| `confirm-swap.spec.ts`   | emit `TireDelivered`, the card flips to `ReadyForSwap` through polling, confirm turns it `Done`, the confirm button then disappears |
+| `cancel.spec.ts`         | cancel from `Created` works; a cancelled booking offers no further actions                                                          |
+| `errors.spec.ts`         | a `409` (confirm on a `Created` booking, forced through the API) renders the error banner; backend down renders the error state     |
+| `a11y.spec.ts`           | keyboard path create -> confirm without a mouse, axe scan on both pages clean                                                       |
 
 Plus a handful of `node:test` unit tests for the pure bits (status-to-allowed-actions mapping,
 the tireSpec validator) so the fast gate keeps catching logic errors.
@@ -151,17 +151,17 @@ takes longer. The pre-commit hook stays as it is.
 
 Every step ends with a runnable UI and a green gate.
 
-| #   | Issue                          | Content                                                                                          |
-| --- | ------------------------------ | ------------------------------------------------------------------------------------------------ |
-| 100 | UI scaffold and dev proxy      | `app/` with Vite, Svelte 5, TS, Tailwind, `svelte-check` in the gate, one page that lists bookings from the real service, npm scripts, docs in the README |
-| 110 | Playwright harness             | config with the two `webServer` entries, `e2e/emit.ts`, first smoke spec, `npm run e2e`          |
-| 120 | Bookings overview              | card grid, status badges, filter chips, polling, loading/empty/error states + `overview.spec.ts` |
-| 130 | Create booking dialog          | form, customer dropdown, client validation mirroring the backend regexes, server error rendering + `create-booking.spec.ts` |
-| 140 | Confirm swap and cancel        | state-aware action buttons, optimistic update with rollback, toasts, 409 banner + `confirm-swap.spec.ts`, `cancel.spec.ts`, `errors.spec.ts` |
-| 150 | Booking detail page and timeline | route, `$expand=customer`, chain timeline, deep link from a card                                |
-| 160 | Polish and a11y                | focus management, `aria-live`, dark mode, axe scan + `a11y.spec.ts`                              |
-| 170 | Serve the UI from cds (opt)    | build into `app/`, `cds serve` hosts it, one command demo                                        |
-| 180 | `managed` on Bookings (opt)    | `createdAt` / `modifiedAt`, real timestamps in the timeline, sort order                          |
+| #   | Issue                            | Content                                                                                                                                                   |
+| --- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 100 | UI scaffold and dev proxy        | `app/` with Vite, Svelte 5, TS, Tailwind, `svelte-check` in the gate, one page that lists bookings from the real service, npm scripts, docs in the README |
+| 110 | Playwright harness               | config with the two `webServer` entries, `e2e/emit.ts`, first smoke spec, `npm run e2e`                                                                   |
+| 120 | Bookings overview                | card grid, status badges, filter chips, polling, loading/empty/error states + `overview.spec.ts`                                                          |
+| 130 | Create booking dialog            | form, customer dropdown, client validation mirroring the backend regexes, server error rendering + `create-booking.spec.ts`                               |
+| 140 | Confirm swap and cancel          | state-aware action buttons, optimistic update with rollback, toasts, 409 banner + `confirm-swap.spec.ts`, `cancel.spec.ts`, `errors.spec.ts`              |
+| 150 | Booking detail page and timeline | route, `$expand=customer`, chain timeline, deep link from a card                                                                                          |
+| 160 | Polish and a11y                  | focus management, `aria-live`, dark mode, axe scan + `a11y.spec.ts`                                                                                       |
+| 170 | Serve the UI from cds (opt)      | build into `app/`, `cds serve` hosts it, one command demo                                                                                                 |
+| 180 | `managed` on Bookings (opt)      | `createdAt` / `modifiedAt`, real timestamps in the timeline, sort order                                                                                   |
 
 Issues 100 and 110 come first and in that order. 120 to 160 build on them and can be split across
 the pair. 170 and 180 are optional and touch the backend, so they only happen if approved.

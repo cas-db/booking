@@ -8,5 +8,5 @@
     "no-unused-vars": "error",
     "no-console": "off"
   },
-  "ignorePatterns": ["node_modules", "gen", "@cds-models"]
+  "ignorePatterns": ["node_modules", "gen", "@cds-models", "app/dist"]
 }
