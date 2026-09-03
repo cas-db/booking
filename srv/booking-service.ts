@@ -30,8 +30,17 @@ export default class BookingService extends cds.ApplicationService {
         return
       }
 
-      const updated = await UPDATE.entity(Bookings, bookingId).with({ status: 'ReadyForSwap' })
-      if (!updated) console.warn(`TireDelivered for unknown booking ${bookingId}, ignoring`)
+      const booking = await SELECT.one.from(Bookings, bookingId)
+      if (!booking) {
+        console.warn(`TireDelivered for unknown booking ${bookingId}, ignoring`)
+        return
+      }
+      if (booking.status !== 'Created') {
+        console.warn(`TireDelivered for booking ${bookingId} in status ${booking.status}, ignoring`)
+        return
+      }
+
+      await UPDATE.entity(Bookings, bookingId).with({ status: 'ReadyForSwap' })
     })
 
     this.on('confirmSwap', Bookings, async (req) => {
