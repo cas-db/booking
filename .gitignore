@@ -3,3 +3,5 @@ gen
 @cds-models
 *.log
 /.env
+app/dist
+.svelte-kit

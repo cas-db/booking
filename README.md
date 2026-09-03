@@ -41,6 +41,7 @@ Push your repo to your own GitHub account first (`gh repo create <your-service-n
 | `AGENTS.md`                                      | conventions for the agent (and for you). This file is on the wire before your first message.                    |
 | `db/`, `srv/`, `test/`                           | the `Customers` and `Bookings` entities, `BookingService` at `/booking` and its tests.                          |
 | `specs/`                                         | the four service specs and the shared event contract                                                            |
+| `app/`                                           | the Svelte 5 + Vite frontend, see `UI-PLAN.md`                                                                  |
 | `issues/`                                        | the loop guide, the issue template, the warm-up issue, the planning issue, stretch issues, the review checklist |
 | `.githooks/pre-commit`                           | runs `npm run check` (oxlint, prettier, tsc, tests). Red means no commit.                                       |
 | `.oxlintrc.json`, `.prettierrc`, `tsconfig.json` | lint, format, typecheck config                                                                                  |
@@ -49,12 +50,14 @@ Push your repo to your own GitHub account first (`gh repo create <your-service-n
 
 ## Commands
 
-|                  |                                                                    |
-| ---------------- | ------------------------------------------------------------------ |
-| `npm run watch`  | run with auto-reload, `PORT=4005 npm run watch` to change the port |
-| `npm run check`  | all gates, same as the hook                                        |
-| `npm test`       | tests only                                                         |
-| `npm run format` | let prettier fix formatting                                        |
+|                    |                                                                      |
+| ------------------ | -------------------------------------------------------------------- |
+| `npm run watch`    | run with auto-reload, `PORT=4005 npm run watch` to change the port   |
+| `npm run ui`       | the Svelte UI on <http://localhost:5173>, proxies `/booking` to 4004 |
+| `npm run ui:build` | build the UI into `app/dist`                                         |
+| `npm run check`    | all gates, same as the hook                                          |
+| `npm test`         | tests only                                                           |
+| `npm run format`   | let prettier fix formatting                                          |
 
 ## CAP docs inside the agent (optional)
 
@@ -63,3 +66,15 @@ Copy `copilot-mcp-config.json` to `~/.copilot/mcp-config.json` (create the folde
 ## Events
 
 Services talk through CAP `file-based-messaging`: every service on one machine appends to and reads from `~/.cds-msg-box`. During development you test events in your tests (`messaging.emit(...)` in the test, see `AGENTS.md`). The whole chain only comes together in the finale on the organizer's laptop. A second `cds watch` on the same machine and user would share the file, so run one service at a time.
+
+## The UI
+
+The frontend lives in `app/` (Svelte 5 with runes, Vite, Tailwind). It talks to the OData service
+over `/booking`, which the Vite dev server proxies to `http://localhost:4004`.
+
+```bash
+npm run watch          # terminal 1, the CAP service
+npm run ui             # terminal 2, http://localhost:5173
+```
+
+The plan and the issue breakdown for the UI are in `UI-PLAN.md`.

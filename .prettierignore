@@ -4,3 +4,4 @@ gen
 package-lock.json
 *.cds
 *.csv
+app/dist
