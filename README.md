@@ -50,14 +50,16 @@ Push your repo to your own GitHub account first (`gh repo create <your-service-n
 
 ## Commands
 
-|                    |                                                                      |
-| ------------------ | -------------------------------------------------------------------- |
-| `npm run watch`    | run with auto-reload, `PORT=4005 npm run watch` to change the port   |
-| `npm run ui`       | the Svelte UI on <http://localhost:5173>, proxies `/booking` to 4004 |
-| `npm run ui:build` | build the UI into `app/dist`                                         |
-| `npm run check`    | all gates, same as the hook                                          |
-| `npm test`         | tests only                                                           |
-| `npm run format`   | let prettier fix formatting                                          |
+|                    |                                                                            |
+| ------------------ | -------------------------------------------------------------------------- |
+| `npm run watch`    | run with auto-reload, `PORT=4005 npm run watch` to change the port         |
+| `npm run ui`       | the Svelte UI on <http://localhost:5173>, proxies `/booking` to 4004       |
+| `npm run ui:build` | build the UI into `app/dist`                                               |
+| `npm run check`    | all gates, same as the hook                                                |
+| `npm run e2e`      | Playwright end to end tests (needs `npx playwright install chromium` once) |
+| `npm run e2e:ui`   | the same tests in the Playwright inspector                                 |
+| `npm test`         | tests only                                                                 |
+| `npm run format`   | let prettier fix formatting                                                |
 
 ## CAP docs inside the agent (optional)
 
@@ -78,3 +80,16 @@ npm run ui             # terminal 2, http://localhost:5173
 ```
 
 The plan and the issue breakdown for the UI are in `UI-PLAN.md`.
+
+### End to end tests
+
+```bash
+npx playwright install chromium   # once, plus `sudo npx playwright install-deps chromium` on Linux
+npm run e2e
+```
+
+Playwright starts the CAP service and the UI itself (`webServer` in `playwright.config.ts`) and
+reuses them when they already run. The database is sqlite in-memory, so every run starts from the
+seeded state and each spec creates the data it needs. `e2e/emit.ts` appends events to
+`~/.cds-msg-box` exactly like another service of the chain would, which is how a spec reaches
+`ReadyForSwap`.

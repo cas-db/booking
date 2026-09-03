@@ -13,5 +13,5 @@
       "@sap/cds": ["./node_modules/@cap-js/cds-types"]
     }
   },
-  "include": ["srv/**/*.ts", "test/**/*.ts"]
+  "include": ["srv/**/*.ts", "test/**/*.ts", "e2e/**/*.ts", "playwright.config.ts"]
 }
