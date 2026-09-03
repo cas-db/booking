@@ -22,11 +22,17 @@
       onclick={() => toggle(status)}
       class="rounded-full border px-3 py-1.5 text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:outline-none
         {selected.includes(status)
-        ? 'border-sky-600 bg-sky-600 text-white'
+        ? 'border-sky-600 bg-sky-700 text-white'
         : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200'}"
     >
       {statusLabel(status)}
-      <span class="ml-1 opacity-70">{counts[status]}</span>
+      <span
+        class="ml-1 {selected.includes(status)
+          ? 'text-sky-100'
+          : 'text-slate-600 dark:text-slate-400'}"
+      >
+        {counts[status]}
+      </span>
     </button>
   {/each}
 </div>

@@ -65,7 +65,9 @@
 
   <label class="flex flex-col gap-1 text-sm">
     <span class="font-medium">Customer</span>
+    <!-- svelte-ignore a11y_autofocus -->
     <select
+      autofocus
       bind:value={customerId}
       class="rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900"
     >
@@ -93,7 +95,7 @@
       {/each}
     </datalist>
     {#if touched.tireSpec && tireSpecProblem}
-      <span id="tire-spec-error" data-testid="tire-spec-error" class="text-sm text-red-600">
+      <span id="tire-spec-error" data-testid="tire-spec-error" class="text-sm text-red-700">
         {tireSpecProblem}
       </span>
     {/if}
@@ -110,7 +112,7 @@
       class="rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900"
     />
     {#if touched.garageId && garageIdProblem}
-      <span id="garage-error" data-testid="garage-error" class="text-sm text-red-600">
+      <span id="garage-error" data-testid="garage-error" class="text-sm text-red-700">
         {garageIdProblem}
       </span>
     {/if}
@@ -127,7 +129,7 @@
     <button
       type="submit"
       disabled={invalid || submitting}
-      class="rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+      class="rounded-lg bg-sky-700 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
     >
       {submitting ? 'Booking...' : 'Book swap'}
     </button>

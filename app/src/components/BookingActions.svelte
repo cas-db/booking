@@ -44,7 +44,7 @@
         data-testid="action-{action}"
         class="rounded-lg px-3 py-1.5 text-sm font-semibold transition focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50
           {action === 'confirmSwap'
-          ? 'bg-emerald-600 text-white hover:bg-emerald-500 focus-visible:ring-emerald-400'
+          ? 'bg-emerald-700 text-white hover:bg-emerald-600 focus-visible:ring-emerald-400'
           : 'border border-slate-300 text-slate-700 hover:border-slate-400 focus-visible:ring-slate-400 dark:border-slate-700 dark:text-slate-200'}"
       >
         {running === action ? 'Working...' : ACTION_LABELS[action]}

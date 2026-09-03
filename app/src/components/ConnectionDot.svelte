@@ -5,7 +5,7 @@
 <span
   data-testid="connection"
   data-connected={connected}
-  class="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400"
+  class="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400"
 >
   <span
     aria-hidden="true"

@@ -14,14 +14,17 @@
   const store = createBookingsStore()
 
   let dialog = $state<HTMLDialogElement | null>(null)
+  let trigger = $state<HTMLButtonElement | null>(null)
   let open = $state(false)
 
   function openDialog(): void {
     open = true
   }
 
+  /** Escape and the close button land here, so focus always returns to the opener. */
   function closeDialog(): void {
     open = false
+    trigger?.focus()
   }
 
   async function created(booking: Booking): Promise<void> {
@@ -56,7 +59,7 @@
   <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
     <div>
       <h2 id="bookings-heading" class="text-lg font-semibold">Bookings</h2>
-      <p class="text-sm text-slate-500 dark:text-slate-400">
+      <p class="text-sm text-slate-600 dark:text-slate-400">
         Created &rarr; Ready for swap &rarr; Done, Cancelled leaves the chain
       </p>
     </div>
@@ -66,8 +69,9 @@
   <div class="mb-6 flex justify-end">
     <button
       type="button"
+      bind:this={trigger}
       onclick={openDialog}
-      class="rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-500 focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none"
+      class="rounded-lg bg-sky-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-600 focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none"
     >
       New booking
     </button>
@@ -102,14 +106,14 @@
   {:else if store.bookings.length === 0}
     <p
       data-testid="empty-state"
-      class="rounded-xl border border-dashed border-slate-300 p-10 text-center text-slate-500 dark:border-slate-700 dark:text-slate-400"
+      class="rounded-xl border border-dashed border-slate-300 p-10 text-center text-slate-600 dark:border-slate-700 dark:text-slate-400"
     >
       No bookings yet.
     </p>
   {:else if visible.length === 0}
     <p
       data-testid="no-matches"
-      class="rounded-xl border border-dashed border-slate-300 p-10 text-center text-slate-500 dark:border-slate-700 dark:text-slate-400"
+      class="rounded-xl border border-dashed border-slate-300 p-10 text-center text-slate-600 dark:border-slate-700 dark:text-slate-400"
     >
       No booking matches the filter.
     </p>
@@ -123,11 +127,11 @@
 
   <dialog
     bind:this={dialog}
-    aria-label="New booking"
+    aria-labelledby="new-booking-title"
     onclose={closeDialog}
     class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 backdrop:bg-slate-900/50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
   >
-    <h3 class="mb-4 text-lg font-semibold">New booking</h3>
+    <h3 id="new-booking-title" class="mb-4 text-lg font-semibold">New booking</h3>
     {#if open}
       <BookingForm onclose={closeDialog} oncreated={created} />
     {/if}
