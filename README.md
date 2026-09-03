@@ -50,16 +50,16 @@ Push your repo to your own GitHub account first (`gh repo create <your-service-n
 
 ## Commands
 
-|                    |                                                                            |
-| ------------------ | -------------------------------------------------------------------------- |
-| `npm run watch`    | run with auto-reload, `PORT=4005 npm run watch` to change the port         |
-| `npm run ui`       | the Svelte UI on <http://localhost:5173>, proxies `/booking` to 4004       |
-| `npm run ui:build` | build the UI into `app/dist`                                               |
-| `npm run check`    | all gates, same as the hook                                                |
-| `npm run e2e`      | Playwright end to end tests (needs `npx playwright install chromium` once) |
-| `npm run e2e:ui`   | the same tests in the Playwright inspector                                 |
-| `npm test`         | tests only                                                                 |
-| `npm run format`   | let prettier fix formatting                                                |
+|                  |                                                                            |
+| ---------------- | -------------------------------------------------------------------------- |
+| `npm run watch`  | run with auto-reload, `PORT=4005 npm run watch` to change the port         |
+| `npm run ui`     | the Svelte UI on <http://localhost:5173>, proxies `/booking` to 4004       |
+| `npm run build`  | build the UI into `app/dist`, which `cds serve` hosts                      |
+| `npm run check`  | all gates, same as the hook                                                |
+| `npm run e2e`    | Playwright end to end tests (needs `npx playwright install chromium` once) |
+| `npm run e2e:ui` | the same tests in the Playwright inspector                                 |
+| `npm test`       | tests only                                                                 |
+| `npm run format` | let prettier fix formatting                                                |
 
 ## CAP docs inside the agent (optional)
 
@@ -74,10 +74,20 @@ Services talk through CAP `file-based-messaging`: every service on one machine a
 The frontend lives in `app/` (Svelte 5 with runes, Vite, Tailwind). It talks to the OData service
 over `/booking`, which the Vite dev server proxies to `http://localhost:4004`.
 
+Two ways to run it:
+
 ```bash
-npm run watch          # terminal 1, the CAP service
-npm run ui             # terminal 2, http://localhost:5173
+# development, two processes, hot reload
+npm run watch          # terminal 1, the CAP service on 4004
+npm run ui             # terminal 2, the UI on http://localhost:5173
+
+# demo, one process, one port
+npm run build          # writes app/dist
+npm start              # UI and OData on http://localhost:4004
 ```
+
+`cds` serves the build output because `cds.folders.app` points at `app/dist`, so the built app
+calls `/booking` on its own origin and needs no proxy. `app/dist` is git-ignored.
 
 The plan and the issue breakdown for the UI are in `UI-PLAN.md`.
 
@@ -92,4 +102,5 @@ Playwright starts the CAP service and the UI itself (`webServer` in `playwright.
 reuses them when they already run. The database is sqlite in-memory, so every run starts from the
 seeded state and each spec creates the data it needs. `e2e/emit.ts` appends events to
 `~/.cds-msg-box` exactly like another service of the chain would, which is how a spec reaches
-`ReadyForSwap`.
+`ReadyForSwap`. The `single-process` Playwright project runs `e2e/served.spec.ts` against the
+built app on 4004, so the one command demo stays covered.
