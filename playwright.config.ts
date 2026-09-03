@@ -14,10 +14,22 @@ export default defineConfig({
     baseURL: UI,
     trace: 'on-first-retry',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    {
+      name: 'chromium',
+      testIgnore: 'served.spec.ts',
+      use: { ...devices['Desktop Chrome'], baseURL: UI },
+    },
+    {
+      // The same app, but served by cds from the build output instead of by the Vite dev server.
+      name: 'single-process',
+      testMatch: 'served.spec.ts',
+      use: { ...devices['Desktop Chrome'], baseURL: SERVICE },
+    },
+  ],
   webServer: [
     {
-      command: 'npm start',
+      command: 'npm run build && npm start',
       url: `${SERVICE}/booking/Customers`,
       reuseExistingServer: !process.env.CI,
       stdout: 'ignore',

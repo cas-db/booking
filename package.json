@@ -18,6 +18,7 @@
     "check": "npm run lint && npm run format:check && npm run typecheck && npm test",
     "prepare": "git config core.hooksPath .githooks || true",
     "ui": "vite app",
+    "build": "vite build app",
     "ui:build": "vite build app",
     "ui:preview": "vite preview app",
     "e2e": "playwright test",
@@ -60,6 +61,9 @@
           "kind": "local-messaging"
         }
       }
+    },
+    "folders": {
+      "app": "app/dist"
     }
   }
 }
