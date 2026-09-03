@@ -7,10 +7,10 @@
   const steps = $derived(timelineSteps(status))
 
   const DOT: Record<string, string> = {
-    done: 'bg-emerald-600 text-white',
-    current: 'bg-sky-600 text-white ring-4 ring-sky-200 dark:ring-sky-900',
-    ahead: 'bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
-    skipped: 'bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-500',
+    done: 'bg-emerald-700 text-white',
+    current: 'bg-sky-700 text-white ring-4 ring-sky-200 dark:ring-sky-900',
+    ahead: 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
+    skipped: 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
   }
 </script>
 
@@ -30,13 +30,13 @@
       </span>
       <p
         class="text-sm font-semibold {step.state === 'ahead' || step.state === 'skipped'
-          ? 'text-slate-400 dark:text-slate-500'
+          ? 'text-slate-500 dark:text-slate-400'
           : ''}"
       >
         {step.label}
         <span class="sr-only">({step.state})</span>
       </p>
-      <p class="text-xs text-slate-500 dark:text-slate-400">{step.hint}</p>
+      <p class="text-xs text-slate-600 dark:text-slate-400">{step.hint}</p>
     </li>
   {/each}
 
@@ -49,7 +49,7 @@
         ✕
       </span>
       <p class="text-sm font-semibold">Cancelled</p>
-      <p class="text-xs text-slate-500 dark:text-slate-400">
+      <p class="text-xs text-slate-600 dark:text-slate-400">
         the side branch, BookingCancelled left the service
       </p>
     </li>

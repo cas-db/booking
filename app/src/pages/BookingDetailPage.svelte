@@ -59,7 +59,7 @@
 {:else if missing}
   <p
     data-testid="not-found"
-    class="rounded-xl border border-dashed border-slate-300 p-10 text-center text-slate-500 dark:border-slate-700 dark:text-slate-400"
+    class="rounded-xl border border-dashed border-slate-300 p-10 text-center text-slate-600 dark:border-slate-700 dark:text-slate-400"
   >
     No booking with this ID.
   </p>
@@ -80,7 +80,7 @@
     <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
       <div>
         <h2 class="text-xl font-semibold">{booking.tireSpec}</h2>
-        <p class="text-sm text-slate-500 dark:text-slate-400">
+        <p class="text-sm text-slate-600 dark:text-slate-400">
           {booking.customer?.name ?? 'no customer'}
         </p>
       </div>
@@ -89,15 +89,15 @@
 
     <dl class="mb-8 grid gap-4 sm:grid-cols-3">
       <div>
-        <dt class="text-sm text-slate-500 dark:text-slate-400">Garage</dt>
+        <dt class="text-sm text-slate-600 dark:text-slate-400">Garage</dt>
         <dd class="font-medium">{booking.garageId}</dd>
       </div>
       <div>
-        <dt class="text-sm text-slate-500 dark:text-slate-400">Customer</dt>
+        <dt class="text-sm text-slate-600 dark:text-slate-400">Customer</dt>
         <dd class="font-medium">{booking.customer?.name ?? 'no customer'}</dd>
       </div>
       <div class="sm:col-span-3">
-        <dt class="text-sm text-slate-500 dark:text-slate-400">Booking ID</dt>
+        <dt class="text-sm text-slate-600 dark:text-slate-400">Booking ID</dt>
         <dd data-testid="booking-id" class="font-mono text-sm break-all">{booking.ID}</dd>
       </div>
     </dl>

@@ -30,7 +30,7 @@
           {booking.tireSpec}
         </a>
       </h3>
-      <p class="text-sm text-slate-500 dark:text-slate-400">
+      <p class="text-sm text-slate-600 dark:text-slate-400">
         {booking.customer?.name ?? 'no customer'}
       </p>
     </div>
@@ -39,11 +39,11 @@
 
   <dl class="grid grid-cols-2 gap-2 text-sm">
     <div>
-      <dt class="text-slate-500 dark:text-slate-400">Garage</dt>
+      <dt class="text-slate-600 dark:text-slate-400">Garage</dt>
       <dd class="font-medium">{booking.garageId}</dd>
     </div>
     <div>
-      <dt class="text-slate-500 dark:text-slate-400">Booking</dt>
+      <dt class="text-slate-600 dark:text-slate-400">Booking</dt>
       <dd class="font-mono text-xs">{booking.ID.slice(0, 8)}</dd>
     </div>
   </dl>

@@ -15,7 +15,7 @@
       data-kind={toast.kind}
       class="pointer-events-auto rounded-lg px-4 py-2 text-sm font-medium shadow-lg ring-1 {toast.kind ===
       'success'
-        ? 'bg-emerald-600 text-white ring-emerald-700'
+        ? 'bg-emerald-700 text-white ring-emerald-700'
         : 'bg-red-600 text-white ring-red-700'}"
     >
       {toast.message}

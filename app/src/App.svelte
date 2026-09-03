@@ -10,6 +10,13 @@
 </script>
 
 <div class="min-h-screen">
+  <a
+    href="#main"
+    class="sr-only rounded bg-sky-700 px-4 py-2 text-white focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50"
+  >
+    Skip to the bookings
+  </a>
+
   <header
     class="border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80"
   >
@@ -24,18 +31,18 @@
             Tire swap bookings
           </a>
         </h1>
-        <p class="text-sm text-slate-500 dark:text-slate-400">booking service on /booking</p>
+        <p class="text-sm text-slate-600 dark:text-slate-400">booking service on /booking</p>
       </div>
     </div>
   </header>
 
-  <main class="mx-auto max-w-5xl px-6 py-8">
+  <main id="main" class="mx-auto max-w-5xl px-6 py-8">
     {#if router.current.name === 'detail'}
       <BookingDetailPage id={router.current.id} {toasts} />
     {:else if router.current.name === 'unknown'}
       <p
         data-testid="not-found"
-        class="rounded-xl border border-dashed border-slate-300 p-10 text-center text-slate-500 dark:border-slate-700 dark:text-slate-400"
+        class="rounded-xl border border-dashed border-slate-300 p-10 text-center text-slate-600 dark:border-slate-700 dark:text-slate-400"
       >
         This page does not exist. <a href="#/" class="text-sky-700 underline dark:text-sky-300"
           >Back to the bookings</a
