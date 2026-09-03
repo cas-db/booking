@@ -1,7 +1,9 @@
 <script lang="ts">
   import type { Booking } from '../api/types'
   import StatusBadge from './StatusBadge.svelte'
-  import { ACTION_LABELS, allowedActions, type BookingAction } from '../lib/status'
+  import BookingActions from './BookingActions.svelte'
+  import type { BookingAction } from '../lib/status'
+  import { bookingHref } from '../lib/router.svelte'
 
   let {
     booking,
@@ -10,19 +12,6 @@
     booking: Booking
     onaction: (booking: Booking, action: BookingAction) => Promise<string | null>
   } = $props()
-
-  let running = $state<BookingAction | null>(null)
-  let error = $state<string | null>(null)
-
-  const actions = $derived(allowedActions(booking.status))
-
-  async function run(action: BookingAction) {
-    if (running) return
-    running = action
-    error = null
-    error = await onaction(booking, action)
-    running = null
-  }
 </script>
 
 <article
@@ -33,7 +22,14 @@
 >
   <div class="flex items-start justify-between gap-3">
     <div>
-      <h3 class="text-base font-semibold">{booking.tireSpec}</h3>
+      <h3 class="text-base font-semibold">
+        <a
+          href={bookingHref(booking.ID)}
+          class="rounded hover:text-sky-700 hover:underline focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:outline-none dark:hover:text-sky-300"
+        >
+          {booking.tireSpec}
+        </a>
+      </h3>
       <p class="text-sm text-slate-500 dark:text-slate-400">
         {booking.customer?.name ?? 'no customer'}
       </p>
@@ -52,32 +48,5 @@
     </div>
   </dl>
 
-  {#if error}
-    <p
-      role="alert"
-      data-testid="card-error"
-      class="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200"
-    >
-      {error}
-    </p>
-  {/if}
-
-  {#if actions.length > 0}
-    <div class="flex flex-wrap gap-2">
-      {#each actions as action (action)}
-        <button
-          type="button"
-          disabled={running !== null}
-          onclick={() => run(action)}
-          data-testid="action-{action}"
-          class="rounded-lg px-3 py-1.5 text-sm font-semibold transition focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50
-            {action === 'confirmSwap'
-            ? 'bg-emerald-600 text-white hover:bg-emerald-500 focus-visible:ring-emerald-400'
-            : 'border border-slate-300 text-slate-700 hover:border-slate-400 focus-visible:ring-slate-400 dark:border-slate-700 dark:text-slate-200'}"
-        >
-          {running === action ? 'Working...' : ACTION_LABELS[action]}
-        </button>
-      {/each}
-    </div>
-  {/if}
+  <BookingActions {booking} {onaction} />
 </article>

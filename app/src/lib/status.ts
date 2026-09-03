@@ -75,3 +75,39 @@ export function allowedActions(status: BookingStatus): BookingAction[] {
   if (status === 'Created') return ['cancel']
   return []
 }
+
+export type TimelineState = 'done' | 'current' | 'ahead' | 'skipped'
+export type TimelineStep = { key: string; label: string; hint: string; state: TimelineState }
+
+/**
+ * The chain as the spec describes it: booked, tire delivered, swapped. Cancelled is a side
+ * branch, so a cancelled booking never reaches the later steps.
+ */
+export function timelineSteps(status: BookingStatus): TimelineStep[] {
+  const completed: Record<BookingStatus, number> = {
+    Created: 1,
+    ReadyForSwap: 2,
+    Done: 3,
+    Cancelled: 1,
+  }
+  const done = completed[status]
+  const cancelled = status === 'Cancelled'
+
+  const steps = [
+    { key: 'booked', label: 'Booked', hint: 'BookingCreated left the service' },
+    { key: 'delivered', label: 'Tire delivered', hint: 'TireDelivered arrived from the chain' },
+    { key: 'swapped', label: 'Swapped', hint: 'BookingDone left the service' },
+  ]
+
+  return steps.map((step, index) => ({
+    ...step,
+    state:
+      index < done
+        ? 'done'
+        : cancelled
+          ? 'skipped'
+          : index === done
+            ? 'current'
+            : ('ahead' as const),
+  })) as TimelineStep[]
+}
