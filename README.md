@@ -11,7 +11,7 @@ git clone https://github.com/MVansteenhuyse/cap-workshop-template.git <your-serv
 cd <your-service-name>
 npm install            # also activates the pre-commit hook
 npm test               # 2 tests green
-npm run watch          # http://localhost:4004/hello/Greetings
+npm run watch          # http://localhost:4004/booking/Customers
 ```
 
 Then, in a second terminal in the same folder:
@@ -29,7 +29,7 @@ Push your repo to your own GitHub account first (`gh repo create <your-service-n
 |                                                  |                                                                                                                 |
 | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
 | `AGENTS.md`                                      | conventions for the agent (and for you). This file is on the wire before your first message.                    |
-| `db/`, `srv/`, `test/`                           | the placeholder `Greetings` entity, `HelloService` and its tests. The warm-up issue replaces them.              |
+| `db/`, `srv/`, `test/`                           | the `Customers` and `Bookings` entities, `BookingService` at `/booking` and its tests.                          |
 | `specs/`                                         | the four service specs and the shared event contract                                                            |
 | `issues/`                                        | the loop guide, the issue template, the warm-up issue, the planning issue, stretch issues, the review checklist |
 | `.githooks/pre-commit`                           | runs `npm run check` (oxlint, prettier, tsc, tests). Red means no commit.                                       |
