@@ -1,6 +1,13 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { countByStatus, filterBookings, matchesText, statusLabel } from './status'
+import {
+  ACTION_RESULT,
+  allowedActions,
+  countByStatus,
+  filterBookings,
+  matchesText,
+  statusLabel,
+} from './status'
 import type { Booking } from '../api/types'
 
 const booking = (over: Partial<Booking> = {}): Booking => ({
@@ -55,5 +62,25 @@ describe('status helpers', () => {
   it('renders ReadyForSwap as two words', () => {
     assert.equal(statusLabel('ReadyForSwap'), 'Ready for swap')
     assert.equal(statusLabel('Done'), 'Done')
+  })
+})
+
+describe('allowed actions per status', () => {
+  it('offers confirm swap only in ReadyForSwap', () => {
+    assert.deepEqual(allowedActions('ReadyForSwap'), ['confirmSwap'])
+  })
+
+  it('offers cancel only in Created, the backend forbids it later', () => {
+    assert.deepEqual(allowedActions('Created'), ['cancel'])
+  })
+
+  it('offers nothing once a booking is Done or Cancelled', () => {
+    assert.deepEqual(allowedActions('Done'), [])
+    assert.deepEqual(allowedActions('Cancelled'), [])
+  })
+
+  it('names the status an action leaves the booking in', () => {
+    assert.equal(ACTION_RESULT.confirmSwap, 'Done')
+    assert.equal(ACTION_RESULT.cancel, 'Cancelled')
   })
 })

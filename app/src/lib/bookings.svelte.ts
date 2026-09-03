@@ -1,5 +1,6 @@
-import { listBookings } from '../api/booking'
+import { cancelBooking, confirmSwap, listBookings } from '../api/booking'
 import type { Booking } from '../api/types'
+import { ACTION_RESULT, type BookingAction } from './status'
 
 const POLL_MS = 3000
 
@@ -50,6 +51,31 @@ export function createBookingsStore() {
     }
   }
 
+  function replace(booking: Booking): void {
+    bookings = bookings.map((row) => (row.ID === booking.ID ? { ...row, ...booking } : row))
+  }
+
+  /**
+   * Runs a bound action optimistically: the card flips right away and rolls back to the
+   * status the server still has when the request fails.
+   */
+  async function act(
+    booking: Booking,
+    action: BookingAction,
+  ): Promise<{ ok: true } | { ok: false; message: string }> {
+    const previous = booking.status
+    replace({ ...booking, status: ACTION_RESULT[action] })
+    try {
+      const updated =
+        action === 'confirmSwap' ? await confirmSwap(booking.ID) : await cancelBooking(booking.ID)
+      replace({ ...booking, ...updated })
+      return { ok: true }
+    } catch (e) {
+      replace({ ...booking, status: previous })
+      return { ok: false, message: e instanceof Error ? e.message : 'the action failed' }
+    }
+  }
+
   return {
     get bookings() {
       return bookings
@@ -65,6 +91,7 @@ export function createBookingsStore() {
     },
     start,
     refresh,
+    act,
   }
 }
 

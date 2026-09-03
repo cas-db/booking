@@ -66,3 +66,19 @@ export async function createBooking(booking: NewBooking): Promise<Booking> {
     body: JSON.stringify(booking),
   })
 }
+
+export async function confirmSwap(id: string): Promise<Booking> {
+  return action(id, 'confirmSwap')
+}
+
+export async function cancelBooking(id: string): Promise<Booking> {
+  return action(id, 'cancel')
+}
+
+function action(id: string, name: 'confirmSwap' | 'cancel'): Promise<Booking> {
+  return request<Booking>(`/Bookings(${id})/BookingService.${name}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: '{}',
+  })
+}
