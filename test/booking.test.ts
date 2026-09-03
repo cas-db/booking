@@ -37,6 +37,28 @@ describe('BookingService', () => {
   it('rejects a booking without a tireSpec', async () => {
     await assert.rejects(POST('/booking/Bookings', { tireSpec: '  ', garageId: 'GAR-01' }), /400/)
   })
+
+  it('accepts a well formed tireSpec and garageId', async () => {
+    const { status } = await POST('/booking/Bookings', {
+      tireSpec: '225/45 R17 allseason',
+      garageId: 'GAR-42',
+    })
+    assert.equal(status, 201)
+  })
+
+  it('rejects a malformed tireSpec', async () => {
+    await assert.rejects(
+      POST('/booking/Bookings', { tireSpec: 'very round black tire', garageId: 'GAR-01' }),
+      /400/,
+    )
+  })
+
+  it('rejects a malformed garageId', async () => {
+    await assert.rejects(
+      POST('/booking/Bookings', { tireSpec: '205/55 R16 winter', garageId: 'garage one' }),
+      /400/,
+    )
+  })
 })
 
 describe('BookingCreated event', () => {

@@ -3,6 +3,11 @@ import { canTransition } from './booking-status'
 
 const { SELECT, UPDATE } = cds.ql
 
+/** e.g. 205/55 R16 winter */
+const TIRE_SPEC = /^\d{3}\/\d{2} R\d{2} (winter|summer|allseason)$/
+/** e.g. GAR-01 */
+const GARAGE_ID = /^GAR-\d{2}$/
+
 type TireDelivered = {
   bookingId?: string
   garageId?: string
@@ -15,8 +20,18 @@ export default class BookingService extends cds.ApplicationService {
     const messaging = await cds.connect.to('messaging')
 
     this.before('CREATE', Bookings, (req) => {
-      if (!req.data.tireSpec?.trim()) req.reject(400, 'tireSpec must not be empty')
-      if (!req.data.garageId?.trim()) req.reject(400, 'garageId must not be empty')
+      const tireSpec = req.data.tireSpec?.trim()
+      const garageId = req.data.garageId?.trim()
+
+      if (!TIRE_SPEC.test(tireSpec ?? '')) {
+        req.reject(400, 'tireSpec must look like "205/55 R16 winter" (winter, summer or allseason)')
+      }
+      if (!GARAGE_ID.test(garageId ?? '')) {
+        req.reject(400, 'garageId must look like "GAR-01"')
+      }
+
+      req.data.tireSpec = tireSpec
+      req.data.garageId = garageId
     })
 
     this.after('CREATE', Bookings, async (_keys, req) => {
