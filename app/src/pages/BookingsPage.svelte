@@ -4,7 +4,7 @@
   import ConnectionDot from '../components/ConnectionDot.svelte'
   import BookingForm from '../components/BookingForm.svelte'
   import { createBookingsStore } from '../lib/bookings.svelte'
-  import { countByStatus, filterBookings } from '../lib/status'
+  import { ACTION_LABELS, countByStatus, filterBookings, type BookingAction } from '../lib/status'
   import type { Booking, BookingStatus } from '../api/types'
   import type { Toasts } from '../lib/toasts.svelte'
 
@@ -29,6 +29,16 @@
     closeDialog()
     toasts.success(`Booking for ${booking.tireSpec} created`)
     await store.refresh()
+  }
+
+  async function runAction(booking: Booking, action: BookingAction): Promise<string | null> {
+    const result = await store.act(booking, action)
+    if (result.ok) {
+      toasts.success(`${ACTION_LABELS[action]}: ${booking.tireSpec}`)
+      return null
+    }
+    toasts.error(result.message)
+    return result.message
   }
 
   $effect(() => {
@@ -107,7 +117,7 @@
   {:else}
     <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {#each visible as booking (booking.ID)}
-        <li><BookingCard {booking} /></li>
+        <li><BookingCard {booking} onaction={runAction} /></li>
       {/each}
     </ul>
   {/if}

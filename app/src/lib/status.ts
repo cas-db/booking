@@ -55,3 +55,23 @@ export function countByStatus(bookings: Booking[]): Record<BookingStatus, number
   }
   return counts
 }
+
+export type BookingAction = 'confirmSwap' | 'cancel'
+
+export const ACTION_LABELS: Record<BookingAction, string> = {
+  confirmSwap: 'Confirm swap',
+  cancel: 'Cancel',
+}
+
+/** The status a successful action leaves the booking in, used for the optimistic update. */
+export const ACTION_RESULT: Record<BookingAction, BookingStatus> = {
+  confirmSwap: 'Done',
+  cancel: 'Cancelled',
+}
+
+/** Mirrors the transitions srv/booking-status.ts allows, the server stays the authority. */
+export function allowedActions(status: BookingStatus): BookingAction[] {
+  if (status === 'ReadyForSwap') return ['confirmSwap']
+  if (status === 'Created') return ['cancel']
+  return []
+}
