@@ -2,14 +2,40 @@
   import BookingCard from '../components/BookingCard.svelte'
   import StatusFilter from '../components/StatusFilter.svelte'
   import ConnectionDot from '../components/ConnectionDot.svelte'
+  import BookingForm from '../components/BookingForm.svelte'
   import { createBookingsStore } from '../lib/bookings.svelte'
   import { countByStatus, filterBookings } from '../lib/status'
-  import type { BookingStatus } from '../api/types'
+  import type { Booking, BookingStatus } from '../api/types'
+  import type { Toasts } from '../lib/toasts.svelte'
+
+  let { toasts }: { toasts: Toasts } = $props()
 
   const store = createBookingsStore()
 
   let selected = $state<BookingStatus[]>([])
   let needle = $state('')
+  let dialog = $state<HTMLDialogElement | null>(null)
+  let open = $state(false)
+
+  function openDialog(): void {
+    open = true
+  }
+
+  function closeDialog(): void {
+    open = false
+  }
+
+  async function created(booking: Booking): Promise<void> {
+    closeDialog()
+    toasts.success(`Booking for ${booking.tireSpec} created`)
+    await store.refresh()
+  }
+
+  $effect(() => {
+    if (!dialog) return
+    if (open && !dialog.open) dialog.showModal()
+    if (!open && dialog.open) dialog.close()
+  })
 
   const counts = $derived(countByStatus(store.bookings))
   const visible = $derived(filterBookings(store.bookings, selected, needle))
@@ -26,6 +52,16 @@
       </p>
     </div>
     <ConnectionDot connected={store.connected} />
+  </div>
+
+  <div class="mb-6 flex justify-end">
+    <button
+      type="button"
+      onclick={openDialog}
+      class="rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-500 focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none"
+    >
+      New booking
+    </button>
   </div>
 
   <div class="mb-6 flex flex-wrap items-center gap-3">
@@ -75,4 +111,16 @@
       {/each}
     </ul>
   {/if}
+
+  <dialog
+    bind:this={dialog}
+    aria-label="New booking"
+    onclose={closeDialog}
+    class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 backdrop:bg-slate-900/50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
+  >
+    <h3 class="mb-4 text-lg font-semibold">New booking</h3>
+    {#if open}
+      <BookingForm onclose={closeDialog} oncreated={created} />
+    {/if}
+  </dialog>
 </section>
