@@ -9,6 +9,7 @@
   "scripts": {
     "start": "cds serve",
     "watch": "cds watch",
+    "demo": "./scripts/chain-demo.sh",
     "lint": "oxlint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

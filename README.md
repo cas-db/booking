@@ -10,9 +10,19 @@ Template: <https://github.com/MVansteenhuyse/cap-workshop-template>
 git clone https://github.com/MVansteenhuyse/cap-workshop-template.git <your-service-name>
 cd <your-service-name>
 npm install            # also activates the pre-commit hook
-npm test               # 2 tests green
+npm test               # all tests green
 npm run watch          # http://localhost:4004/booking/Customers
 ```
+
+## Demo the whole chain
+
+With `npm run watch` running in one terminal:
+
+```bash
+npm run demo           # needs jq
+```
+
+`scripts/chain-demo.sh` books a tire swap, shows the `BookingCreated` event in the message box, proves that confirming too early answers `409`, fakes the garage by appending `TireDelivered` to `~/.cds-msg-box`, confirms the swap, and finally replays `TireDelivered` to show that a `Done` booking is not reopened. `BASE`, `MSG_BOX`, `TIRE_SPEC` and `GARAGE_ID` are overridable through the environment.
 
 Then, in a second terminal in the same folder:
 
