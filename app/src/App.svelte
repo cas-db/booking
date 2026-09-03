@@ -1,5 +1,9 @@
 <script lang="ts">
   import BookingsPage from './pages/BookingsPage.svelte'
+  import Toast from './components/Toast.svelte'
+  import { createToasts } from './lib/toasts.svelte'
+
+  const toasts = createToasts()
 </script>
 
 <div class="min-h-screen">
@@ -16,6 +20,8 @@
   </header>
 
   <main class="mx-auto max-w-5xl px-6 py-8">
-    <BookingsPage />
+    <BookingsPage {toasts} />
   </main>
+
+  <Toast {toasts} />
 </div>

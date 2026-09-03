@@ -1,4 +1,4 @@
-import type { Booking, Customer } from './types'
+import type { Booking, Customer, NewBooking } from './types'
 
 const BASE = '/booking'
 
@@ -57,4 +57,12 @@ export async function getBooking(id: string): Promise<Booking> {
 export async function listCustomers(): Promise<Customer[]> {
   const body = await request<ODataList<Customer>>('/Customers')
   return body.value
+}
+
+export async function createBooking(booking: NewBooking): Promise<Booking> {
+  return request<Booking>('/Bookings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(booking),
+  })
 }
